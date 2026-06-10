@@ -1,0 +1,61 @@
+{
+  "title": "Einstellungen",
+  "tabs": {
+    "profile": "Profil",
+    "general": "Allgemein",
+    "agent": "Agent"
+  },
+  "profile": {
+    "logout": "Abmelden",
+    "edit": "Bearbeiten",
+    "editName": "Spitznamen bearbeiten",
+    "changeAvatar": "Avatar ändern",
+    "save": "Speichern",
+    "saving": "Wird gespeichert...",
+    "cancel": "Abbrechen",
+    "confirm": "Bestätigen",
+    "uploading": "Wird hochgeladen...",
+    "nameRequired": "Bitte geben Sie einen Benutzernamen ein",
+    "nameLengthError": "Benutzername muss zwischen 2-20 Zeichen haben",
+    "nameUpdateSuccess": "Benutzername erfolgreich aktualisiert",
+    "nameUpdateFailed": "Benutzername konnte nicht aktualisiert werden",
+    "avatarTypeError": "Bitte wählen Sie eine Bilddatei aus",
+    "avatarSizeError": "Bildgröße darf 5MB nicht überschreiten",
+    "avatarUpdateSuccess": "Avatar erfolgreich aktualisiert",
+    "avatarUpdateFailed": "Avatar konnte nicht aktualisiert werden",
+    "cropAvatar": "Avatar zuschneiden",
+    "rotateLeft": "Nach links drehen",
+    "rotateRight": "Nach rechts drehen",
+    "zoomIn": "Vergrößern",
+    "zoomOut": "Verkleinern",
+    "imageLoading": "Bild wird geladen...",
+    "processing": "Wird verarbeitet...",
+    "githubStars": "GitHub-Sterne"
+  },
+  "general": {
+    "language": "Website-Sprache",
+    "languageDesc": "Diese Änderung beeinflusst nicht die Sprache für die Inhaltsgenerierung",
+    "theme": "Erscheinungsbild",
+    "themeDesc": "Wählen Sie Ihren bevorzugten Themenmodus",
+    "themeLight": "Hell",
+    "themeDark": "Dunkel",
+    "themeSystem": "System",
+    "notifications": "E-Mail-Benachrichtigungen",
+    "notificationsDesc": "Verwalten Sie Ihre E-Mail-Benachrichtigungseinstellungen",
+    "editNotifications": "Benachrichtigungseinstellungen bearbeiten",
+    "changingLanguage": "Switching..."
+  },
+  "agent": {
+    "title": "Agent",
+    "defaultModel": "Standardmodell",
+    "defaultModelDesc": "Wählen Sie das Standard-KI-Modell für Agent-Gespräche",
+    "selectModel": "Modell auswählen...",
+    "searchModels": "Modelle suchen...",
+    "noModelFound": "Kein Modell gefunden",
+    "pleaseSelectModel": "Bitte wählen Sie ein Modell",
+    "save": "Speichern",
+    "saving": "Wird gespeichert...",
+    "saveSuccess": "Erfolgreich gespeichert",
+    "saveFailed": "Speichern fehlgeschlagen"
+  }
+}

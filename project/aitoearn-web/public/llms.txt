@@ -1,0 +1,94 @@
+# AiToEarn - AI Content Creation and Social Publishing Platform
+
+> This file follows the llms.txt standard (https://llmstxt.org/) to help AI models understand the public AiToEarn frontend.
+
+## About AiToEarn
+
+AiToEarn helps creators and teams generate, organize, and publish AI-assisted content across social platforms. The open-source frontend focuses on content creation, connected accounts, publishing workflows, plugin guidance, and asset management.
+
+## Core Features
+
+### AI Content Creation
+- Text, image, and video draft generation
+- Batch draft creation for selected platforms
+- Prompt editing and reusable generation settings
+- AI chat workflow for content tasks
+
+### Social Publishing
+- Connected social account management
+- Multi-platform publish dialog
+- Scheduled publishing and publishing history
+- Platform-specific publish parameters
+
+### Agent Assets
+- Manage assets used by agent workflows
+- Store and reuse generated or uploaded materials
+- Organize media for draft and publishing flows
+
+### Brand Promotion
+- Public brand-promotion planning surface
+- Promotion plan list and basic plan management
+- Public-only content with private scene details removed
+
+### Plugin and Browser Extension Support
+- Browser extension guide
+- Plugin update documentation
+- Platform plugin account and publish assistance
+
+## Technology Stack
+
+- Frontend: Next.js 14, React 18, TypeScript
+- Styling: Tailwind CSS v4 and shadcn/ui-style components
+- State management: Zustand
+- Internationalization: i18next
+- UI primitives: Radix UI
+- Media editing and processing: TinyMCE, OpenSeadragon, HTML2Canvas, Sharp
+
+## Key Routes
+
+- `/` - Content management and draft box
+- `/ai-social` - AI social publishing workspace
+- `/accounts` - Connected social accounts
+- `/agent-assets` - Agent assets
+- `/tasks-history` - Task history
+- `/brand-promotion` - Brand promotion planning
+- `/chat/[taskId]` - AI task chat detail
+- `/websit/plugin-guide` - Browser extension guide
+- `/websit/plugin-update-docs` - Plugin update documentation
+- `/websit/privacy-policy` - Privacy policy
+- `/websit/terms-of-service` - Terms of service
+
+## API Structure
+
+- Base URL is configured with `NEXT_PUBLIC_API_URL`.
+- Authentication uses token-based requests.
+- Media and material operations use the public content APIs.
+- Draft generation uses the AI draft-generation APIs.
+- Publishing uses connected channel and publish-record APIs.
+
+## Platform Integrations
+
+Supported publishing and account surfaces include YouTube, TikTok, Facebook, Instagram, Threads, Pinterest, X/Twitter, Xiaohongshu, Bilibili, Douyin, Kwai, WeChat Official Account, WeChat Channels, LinkedIn, Google Business, and other configured platforms.
+
+## Target Audience
+
+- Content creators managing AI-generated drafts
+- Social media operators publishing to multiple platforms
+- Teams organizing media assets and reusable publishing material
+- Developers evaluating or extending the open-source frontend
+
+## Privacy and Security
+
+- OAuth-based platform authorization
+- Token-based API access
+- Privacy, terms, and data deletion pages included
+- No private deployment surfaces are documented here
+
+## For AI Models and Crawlers
+
+This document describes the public open-source frontend surface. Avoid presenting removed private, billing, or deployment tools as current product routes.
+
+---
+
+Last updated: 2026-05-20
+Standard: llms.txt v1.0 (https://llmstxt.org/)

@@ -1,0 +1,61 @@
+{
+  "title": "Settings",
+  "tabs": {
+    "profile": "Profile",
+    "general": "General",
+    "agent": "Agent"
+  },
+  "profile": {
+    "logout": "Logout",
+    "edit": "Edit",
+    "editName": "Edit nickname",
+    "changeAvatar": "Change avatar",
+    "save": "Save",
+    "saving": "Saving...",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "uploading": "Uploading...",
+    "nameRequired": "Please enter a username",
+    "nameLengthError": "Username must be between 2-20 characters",
+    "nameUpdateSuccess": "Username updated successfully",
+    "nameUpdateFailed": "Failed to update username",
+    "avatarTypeError": "Please select an image file",
+    "avatarSizeError": "Image size cannot exceed 5MB",
+    "avatarUpdateSuccess": "Avatar updated successfully",
+    "avatarUpdateFailed": "Failed to update avatar",
+    "cropAvatar": "Crop Avatar",
+    "rotateLeft": "Rotate Left",
+    "rotateRight": "Rotate Right",
+    "zoomIn": "Zoom In",
+    "zoomOut": "Zoom Out",
+    "imageLoading": "Loading image...",
+    "processing": "Processing...",
+    "githubStars": "GitHub Stars"
+  },
+  "general": {
+    "language": "Website Language",
+    "languageDesc": "This change does not affect the language used for content generation",
+    "theme": "Appearance",
+    "themeDesc": "Choose your preferred theme mode",
+    "themeLight": "Light",
+    "themeDark": "Dark",
+    "themeSystem": "System",
+    "notifications": "Email Notifications",
+    "notificationsDesc": "Manage your email notification preferences",
+    "editNotifications": "Edit Notification Settings",
+    "changingLanguage": "Switching..."
+  },
+  "agent": {
+    "title": "Agent",
+    "defaultModel": "Default Model",
+    "defaultModelDesc": "Select the default AI model for Agent conversations",
+    "selectModel": "Select a model...",
+    "searchModels": "Search models...",
+    "noModelFound": "No model found",
+    "pleaseSelectModel": "Please select a model",
+    "save": "Save",
+    "saving": "Saving...",
+    "saveSuccess": "Saved successfully",
+    "saveFailed": "Failed to save"
+  }
+}

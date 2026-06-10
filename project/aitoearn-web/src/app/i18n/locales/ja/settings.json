@@ -1,0 +1,61 @@
+{
+  "title": "設定",
+  "tabs": {
+    "profile": "プロフィール",
+    "general": "一般",
+    "agent": "エージェント"
+  },
+  "profile": {
+    "logout": "ログアウト",
+    "edit": "編集",
+    "editName": "ニックネームを編集",
+    "changeAvatar": "アバターを変更",
+    "save": "保存",
+    "saving": "保存中...",
+    "cancel": "キャンセル",
+    "confirm": "確認",
+    "uploading": "アップロード中...",
+    "nameRequired": "ユーザー名を入力してください",
+    "nameLengthError": "ユーザー名は2〜20文字にしてください",
+    "nameUpdateSuccess": "ユーザー名を更新しました",
+    "nameUpdateFailed": "ユーザー名の更新に失敗しました",
+    "avatarTypeError": "画像ファイルを選択してください",
+    "avatarSizeError": "画像サイズは5MB以下にしてください",
+    "avatarUpdateSuccess": "アバターを更新しました",
+    "avatarUpdateFailed": "アバターの更新に失敗しました",
+    "cropAvatar": "アバターを切り抜く",
+    "rotateLeft": "左に回転",
+    "rotateRight": "右に回転",
+    "zoomIn": "拡大",
+    "zoomOut": "縮小",
+    "imageLoading": "画像を読み込み中...",
+    "processing": "処理中...",
+    "githubStars": "GitHub スター"
+  },
+  "general": {
+    "language": "サイトの言語",
+    "languageDesc": "この変更はコンテンツ生成で使用する言語には影響しません",
+    "theme": "外観",
+    "themeDesc": "お好みのテーマモードを選択してください",
+    "themeLight": "ライト",
+    "themeDark": "ダーク",
+    "themeSystem": "システム",
+    "notifications": "メール通知",
+    "notificationsDesc": "メール通知の設定を管理します",
+    "editNotifications": "通知設定を編集",
+    "changingLanguage": "Switching..."
+  },
+  "agent": {
+    "title": "エージェント",
+    "defaultModel": "デフォルトモデル",
+    "defaultModelDesc": "エージェント会話で使用するデフォルトのAIモデルを選択",
+    "selectModel": "モデルを選択...",
+    "searchModels": "モデルを検索...",
+    "noModelFound": "モデルが見つかりません",
+    "pleaseSelectModel": "モデルを選択してください",
+    "save": "保存",
+    "saving": "保存中...",
+    "saveSuccess": "保存しました",
+    "saveFailed": "保存に失敗しました"
+  }
+}

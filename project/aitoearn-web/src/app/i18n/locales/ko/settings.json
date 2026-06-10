@@ -1,0 +1,61 @@
+{
+  "title": "설정",
+  "tabs": {
+    "profile": "프로필",
+    "general": "일반",
+    "agent": "에이전트"
+  },
+  "profile": {
+    "logout": "로그아웃",
+    "edit": "편집",
+    "editName": "닉네임 편집",
+    "changeAvatar": "아바타 변경",
+    "save": "저장",
+    "saving": "저장 중...",
+    "cancel": "취소",
+    "confirm": "확인",
+    "uploading": "업로드 중...",
+    "nameRequired": "사용자명을 입력해 주세요",
+    "nameLengthError": "사용자명은 2-20자 사이여야 합니다",
+    "nameUpdateSuccess": "사용자명이 성공적으로 업데이트되었습니다",
+    "nameUpdateFailed": "사용자명 업데이트 실패",
+    "avatarTypeError": "이미지 파일을 선택해 주세요",
+    "avatarSizeError": "이미지 크기는 5MB를 초과할 수 없습니다",
+    "avatarUpdateSuccess": "아바타가 성공적으로 업데이트되었습니다",
+    "avatarUpdateFailed": "아바타 업데이트 실패",
+    "cropAvatar": "아바타 자르기",
+    "rotateLeft": "왼쪽 회전",
+    "rotateRight": "오른쪽 회전",
+    "zoomIn": "확대",
+    "zoomOut": "축소",
+    "imageLoading": "이미지 로딩 중...",
+    "processing": "처리 중...",
+    "githubStars": "GitHub 스타"
+  },
+  "general": {
+    "language": "웹사이트 언어",
+    "languageDesc": "이 변경은 콘텐츠 생성에 사용되는 언어에 영향을 미치지 않습니다",
+    "theme": "외관",
+    "themeDesc": "선호하는 테마 모드 선택",
+    "themeLight": "라이트",
+    "themeDark": "다크",
+    "themeSystem": "시스템",
+    "notifications": "이메일 알림",
+    "notificationsDesc": "이메일 알림 환경설정 관리",
+    "editNotifications": "알림 설정 편집",
+    "changingLanguage": "Switching..."
+  },
+  "agent": {
+    "title": "에이전트",
+    "defaultModel": "기본 모델",
+    "defaultModelDesc": "에이전트 대화의 기본 AI 모델 선택",
+    "selectModel": "모델 선택...",
+    "searchModels": "모델 검색...",
+    "noModelFound": "모델을 찾을 수 없습니다",
+    "pleaseSelectModel": "모델을 선택해 주세요",
+    "save": "저장",
+    "saving": "저장 중...",
+    "saveSuccess": "성공적으로 저장되었습니다",
+    "saveFailed": "저장 실패"
+  }
+}

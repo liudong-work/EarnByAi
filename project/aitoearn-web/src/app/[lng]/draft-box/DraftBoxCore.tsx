@@ -1,0 +1,191 @@
+/**
+ * 草稿箱核心组件
+ * 通过 PlanTabBar 管理多推广计划切换，展示内容管理模块
+ */
+
+'use client'
+
+import { Loader2, Plus, Sparkles } from 'lucide-react'
+import { usePathname, useSearchParams } from 'next/navigation'
+import { useCallback, useEffect, useRef } from 'react'
+import { useShallow } from 'zustand/react/shallow'
+import { useBrandPromotionStore } from '@/app/[lng]/brand-promotion/brandPromotionStore'
+import CreatePlanModal from '@/app/[lng]/brand-promotion/components/CreatePlanModal'
+import PlanTabBar from '@/app/[lng]/brand-promotion/components/PlanTabBar'
+import { usePlanDetailStore } from '@/app/[lng]/brand-promotion/planDetailStore'
+import { usePlanTabStore } from '@/app/[lng]/brand-promotion/planTabStore'
+import { useTransClient } from '@/app/i18n/client'
+import { Button } from '@/components/ui/button'
+import DraftContentModule from './components/DraftContentModule'
+
+export default function DraftBoxCore() {
+  const { t } = useTransClient('brandPromotion')
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
+  const searchParamsString = searchParams.toString()
+  const urlPlanId = searchParams.get('planId')
+
+  const {
+    tabPlans,
+    tabPlansLoading,
+    selectedPlanId,
+    initialized,
+  } = usePlanTabStore(
+    useShallow(state => ({
+      tabPlans: state.tabPlans,
+      tabPlansLoading: state.tabPlansLoading,
+      selectedPlanId: state.selectedPlanId,
+      initialized: state.initialized,
+    })),
+  )
+
+  const initTabs = usePlanTabStore(state => state.initTabs)
+
+  const openCreatePlanModal = useBrandPromotionStore(
+    state => state.openCreatePlanModal,
+  )
+
+  const initContentData = usePlanDetailStore(state => state.initContentData)
+  const urlPlanExists = !!urlPlanId && tabPlans.some(plan => plan.id === urlPlanId)
+  const prevSelectedPlanIdRef = useRef<string | null>(selectedPlanId)
+  const prevUrlPlanIdRef = useRef<string | null>(urlPlanId)
+  const selectedPlanChanged = prevSelectedPlanIdRef.current !== selectedPlanId
+  const urlPlanChanged = prevUrlPlanIdRef.current !== urlPlanId
+  const shouldApplyUrlPlan = !!(
+    initialized
+    && urlPlanId
+    && urlPlanExists
+    && selectedPlanId !== urlPlanId
+    && urlPlanChanged
+  )
+  const shouldSyncSelectedToUrl = !!(
+    initialized
+    && selectedPlanId
+    // 当 URL 中存在有效 planId 且正准备应用到 store 时，不要反向把旧的 store 选中值写回 URL，
+    // 否则首次进入页面时会出现 URL 与 store 互相覆盖，触发更新循环。
+    && !shouldApplyUrlPlan
+    && (
+      !urlPlanId
+      || !urlPlanExists
+      || (selectedPlanId !== urlPlanId && selectedPlanChanged && !urlPlanChanged)
+    )
+  )
+
+  const buildPlanUrl = useCallback((planId: string) => {
+    const params = new URLSearchParams(searchParamsString)
+    params.set('planId', planId)
+    const query = params.toString()
+    return query ? `${pathname}?${query}` : pathname
+  }, [pathname, searchParamsString])
+
+  // 初始化 Tab 列表
+  useEffect(() => {
+    initTabs(urlPlanId)
+  }, [initTabs, urlPlanId])
+
+  // URL 参数激活对应 Tab
+  useEffect(() => {
+    if (shouldApplyUrlPlan && urlPlanId) {
+      usePlanTabStore.getState().selectPlan(urlPlanId)
+    }
+  }, [shouldApplyUrlPlan, urlPlanId])
+
+  // 仅在当前选中由 store 驱动变化时回写 URL；URL 驱动切换时不反向覆盖，避免互相打架
+  useEffect(() => {
+    if (!selectedPlanId || !shouldSyncSelectedToUrl) {
+      return
+    }
+    const nextUrl = buildPlanUrl(selectedPlanId)
+    const currentUrl = `${window.location.pathname}${window.location.search}`
+    if (nextUrl !== currentUrl) {
+      window.history.replaceState(null, '', nextUrl)
+    }
+  }, [buildPlanUrl, selectedPlanId, shouldSyncSelectedToUrl])
+
+  // 仅在 URL 已经完成应用，或当前就是 store 主导的切换时初始化，避免首屏默认计划与 URL 计划双请求
+  useEffect(() => {
+    if (selectedPlanId && !shouldApplyUrlPlan) {
+      initContentData(selectedPlanId, false, { skipMaterials: true })
+    }
+  }, [initContentData, selectedPlanId, shouldApplyUrlPlan])
+
+  useEffect(() => {
+    prevSelectedPlanIdRef.current = selectedPlanId
+    prevUrlPlanIdRef.current = urlPlanId
+  }, [selectedPlanId, urlPlanId])
+
+  // Tab 切换回调
+  const handlePlanChange = useCallback((planId: string) => {
+    initContentData(planId, true, { skipMaterials: true })
+  }, [initContentData])
+
+  const loading = !initialized
+  const showEmpty = initialized && tabPlans.length === 0
+
+  if (loading) {
+    return (
+      <div className="flex flex-col h-full">
+        <div className="flex-1 min-h-0">
+          <div className="flex flex-col h-full bg-background">
+            <div className="flex-1 p-4 md:p-6">
+              <div className="flex items-center justify-center h-full">
+                <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (showEmpty) {
+    return (
+      <div className="flex flex-col h-full">
+        <div className="flex-1 min-h-0">
+          <div className="flex flex-col h-full bg-background">
+            <div className="flex-1 flex items-center justify-center p-4">
+              <div className="text-center max-w-md">
+                <div className="mx-auto w-20 h-20 rounded-full bg-gradient-to-br from-[#c565ef]/10 to-[#55D9ED]/10 flex items-center justify-center mb-6">
+                  <Sparkles className="h-10 w-10 text-foreground/60" />
+                </div>
+                <h2 className="text-xl font-semibold text-foreground mb-2">
+                  {t('empty.title')}
+                </h2>
+                <p className="text-muted-foreground mb-6">
+                  {t('empty.description')}
+                </p>
+                <Button
+                  size="lg"
+                  className="cursor-pointer gap-2"
+                  onClick={openCreatePlanModal}
+                >
+                  <Plus className="h-5 w-5" />
+                  {t('empty.createButton')}
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <CreatePlanModal />
+      </div>
+    )
+  }
+
+  return (
+    <div className="flex flex-col h-full">
+      {/* Tab 栏 */}
+      <div data-testid="draftbox-plan-tabs">
+        <PlanTabBar onPlanChange={handlePlanChange} syncUrlQuery />
+      </div>
+      <div className="flex-1 min-h-0">
+        <div className="flex flex-col h-full bg-background">
+          <div id="draft-box-scroll-content" className="flex-1 overflow-auto">
+            <DraftContentModule />
+          </div>
+        </div>
+      </div>
+      {/* 创建/编辑推广计划弹窗 */}
+      <CreatePlanModal />
+    </div>
+  )
+}

@@ -1,0 +1,287 @@
+services:
+  mongodb:
+    image: mongo:latest
+    restart: unless-stopped
+    entrypoint:
+      - bash
+      - -c
+      - >
+        openssl rand -base64 756 > /data/mongodb-keyfile &&
+        chmod 400 /data/mongodb-keyfile &&
+        chown mongodb:mongodb /data/mongodb-keyfile &&
+        exec docker-entrypoint.sh mongod --replSet rs0 --keyFile /data/mongodb-keyfile
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
+    volumes:
+      - mongodb-data:/data/db
+      - mongodb-config:/data/configdb
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - >
+          mongosh mongodb://${MONGO_ROOT_USERNAME}:${MONGO_ROOT_PASSWORD}@localhost:27017/?authSource=admin
+          --quiet --eval "try { quit(rs.status().ok === 1 ? 0 : 1) } catch(e) { quit(1) }"
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 40s
+
+  mongodb-rs-init:
+    image: mongo:latest
+    restart: "no"
+    depends_on:
+      mongodb:
+        condition: service_started
+    entrypoint:
+      - /bin/sh
+      - -c
+      - >
+        until mongosh mongodb://${MONGO_ROOT_USERNAME}:${MONGO_ROOT_PASSWORD}@mongodb:27017/?authSource=admin
+        --quiet --eval "db.adminCommand('ping').ok" >/dev/null 2>&1; do sleep 2; done;
+        mongosh mongodb://${MONGO_ROOT_USERNAME}:${MONGO_ROOT_PASSWORD}@mongodb:27017/?authSource=admin
+        --eval "try { rs.initiate({_id:'rs0', members:[{_id:0, host:'mongodb:27017'}]}) } catch(e) { if (e.codeName!=='AlreadyInitialized') throw e }"
+
+  redis:
+    image: redis:latest
+    restart: unless-stopped
+    command: redis-server --requirepass ${REDIS_PASSWORD}
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test:
+        - CMD
+        - redis-cli
+        - -a
+        - ${REDIS_PASSWORD}
+        - --raw
+        - incr
+        - ping
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 30s
+
+  rustfs:
+    image: rustfs/rustfs:latest
+    hostname: rustfs.local
+    restart: unless-stopped
+    environment:
+      RUSTFS_ACCESS_KEY: ${RUSTFS_ACCESS_KEY}
+      RUSTFS_SECRET_KEY: ${RUSTFS_SECRET_KEY}
+    ports:
+      - 127.0.0.1:${S3_LOCAL_PORT}:9000
+      - 127.0.0.1:${S3_CONSOLE_LOCAL_PORT}:9001
+    volumes:
+      - rustfs-data:/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  aitoearn-init:
+    image: node:lts-alpine
+    restart: "no"
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    working_dir: /app
+    volumes:
+      - ./scripts/init.mjs:/app/init.mjs:ro
+      - ./scripts/init-package.json:/app/package.json:ro
+      - init-data:/data/init
+    environment:
+      MONGO_URI: mongodb://${MONGO_ROOT_USERNAME}:${MONGO_ROOT_PASSWORD}@mongodb:27017
+      JWT_SECRET: ${JWT_SECRET}
+      DB_NAME: aitoearn
+      AUTO_LOGIN_TOKEN_PATH: /data/init/token.txt
+    entrypoint: /bin/sh -c "npm install --omit=dev 2>/dev/null && node init.mjs"
+
+  rustfs-init:
+    image: minio/mc:latest
+    restart: "no"
+    depends_on:
+      rustfs:
+        condition: service_healthy
+    entrypoint: >
+      /bin/sh -c "
+      mc alias set rustfs http://rustfs.local:9000 ${RUSTFS_ACCESS_KEY} ${RUSTFS_SECRET_KEY};
+      mc mb rustfs/aitoearn --ignore-existing;
+      mc anonymous set download rustfs/aitoearn;
+      exit 0;
+      "
+
+  aitoearn-ai:
+    image: aitoearn/aitoearn-ai:latest
+    pull_policy: always
+    restart: unless-stopped
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    ports:
+      - 127.0.0.1:${AI_LOCAL_PORT}:3010
+    volumes:
+      - ./config/aitoearn-ai.config.js:/app/config.js:ro
+    environment:
+      NODE_ENV: production
+      APP_ENV: production
+      APP_NAME: aitoearn-ai
+      MONGODB_HOST: mongodb
+      MONGODB_PORT: 27017
+      MONGODB_USERNAME: ${MONGO_ROOT_USERNAME}
+      MONGODB_PASSWORD: ${MONGO_ROOT_PASSWORD}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+      INTERNAL_TOKEN: ${INTERNAL_TOKEN}
+      SERVER_URL: http://aitoearn-server:3002
+      ASSETS_CONFIG: >-
+        {"provider":"s3","region":"us-east-1","bucketName":"aitoearn","endpoint":"http://rustfs.local:9000","publicEndpoint":"https://${S3_DOMAIN}","cdnEndpoint":"https://${APP_DOMAIN}/oss","accessKeyId":"${RUSTFS_ACCESS_KEY}","secretAccessKey":"${RUSTFS_SECRET_KEY}","forcePathStyle":true}
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      OPENAI_BASE_URL: ${OPENAI_BASE_URL}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
+      ANTHROPIC_BASE_URL: ${ANTHROPIC_BASE_URL}
+      VOLCENGINE_API_KEY: ${VOLCENGINE_API_KEY}
+      VOLCENGINE_ACCESS_KEY_ID: ${VOLCENGINE_ACCESS_KEY_ID}
+      VOLCENGINE_SECRET_ACCESS_KEY: ${VOLCENGINE_SECRET_ACCESS_KEY}
+      VOLCENGINE_VOD_SPACE_NAME: ${VOLCENGINE_VOD_SPACE_NAME}
+      VOLCENGINE_URL_AUTH_PRIMARY_KEY: ${VOLCENGINE_URL_AUTH_PRIMARY_KEY}
+      GROK_API_KEY: ${GROK_API_KEY}
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
+      GEMINI_BASE_URL: ${GEMINI_BASE_URL}
+      GEMINI_KEY_PAIRS: ${GEMINI_KEY_PAIRS}
+      GEMINI_LOCATION: ${GEMINI_LOCATION}
+      DASHSCOPE_API_KEY: ${DASHSCOPE_API_KEY}
+      DASHSCOPE_BASE_URL: ${DASHSCOPE_BASE_URL}
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3010/health', (r) => { process.exit(r.statusCode === 200 ? 0 : 1) })"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  aitoearn-server:
+    image: aitoearn/aitoearn-server:latest
+    pull_policy: always
+    restart: unless-stopped
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      aitoearn-ai:
+        condition: service_healthy
+    ports:
+      - 127.0.0.1:${SERVER_LOCAL_PORT}:3002
+    volumes:
+      - ./config/aitoearn-server.config.js:/app/config.js:ro
+    environment:
+      NODE_ENV: production
+      APP_ENV: production
+      APP_NAME: aitoearn-server
+      APP_DOMAIN: ${APP_DOMAIN}
+      MONGODB_HOST: mongodb
+      MONGODB_PORT: 27017
+      MONGODB_USERNAME: ${MONGO_ROOT_USERNAME}
+      MONGODB_PASSWORD: ${MONGO_ROOT_PASSWORD}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+      AI_URL: http://aitoearn-ai:3010
+      JWT_SECRET: ${JWT_SECRET}
+      INTERNAL_TOKEN: ${INTERNAL_TOKEN}
+      ASSETS_CONFIG: >-
+        {"provider":"s3","region":"us-east-1","bucketName":"aitoearn","endpoint":"http://rustfs.local:9000","publicEndpoint":"https://${S3_DOMAIN}","cdnEndpoint":"https://${APP_DOMAIN}/oss","accessKeyId":"${RUSTFS_ACCESS_KEY}","secretAccessKey":"${RUSTFS_SECRET_KEY}","forcePathStyle":true}
+      MAIL_USER: ${MAIL_USER}
+      MAIL_PASS: ${MAIL_PASS}
+      BILIBILI_CLIENT_ID: ${BILIBILI_CLIENT_ID}
+      BILIBILI_CLIENT_SECRET: ${BILIBILI_CLIENT_SECRET}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
+      KWAI_CLIENT_ID: ${KWAI_CLIENT_ID}
+      KWAI_CLIENT_SECRET: ${KWAI_CLIENT_SECRET}
+      PINTEREST_CLIENT_ID: ${PINTEREST_CLIENT_ID}
+      PINTEREST_CLIENT_SECRET: ${PINTEREST_CLIENT_SECRET}
+      PINTEREST_TEST_AUTHORIZATION: ${PINTEREST_TEST_AUTHORIZATION}
+      TIKTOK_CLIENT_ID: ${TIKTOK_CLIENT_ID}
+      TIKTOK_CLIENT_SECRET: ${TIKTOK_CLIENT_SECRET}
+      TWITTER_CLIENT_ID: ${TWITTER_CLIENT_ID}
+      TWITTER_CLIENT_SECRET: ${TWITTER_CLIENT_SECRET}
+      FACEBOOK_CLIENT_ID: ${FACEBOOK_CLIENT_ID}
+      FACEBOOK_CLIENT_SECRET: ${FACEBOOK_CLIENT_SECRET}
+      FACEBOOK_CONFIG_ID: ${FACEBOOK_CONFIG_ID}
+      THREADS_CLIENT_ID: ${THREADS_CLIENT_ID}
+      THREADS_CLIENT_SECRET: ${THREADS_CLIENT_SECRET}
+      INSTAGRAM_CLIENT_ID: ${INSTAGRAM_CLIENT_ID}
+      INSTAGRAM_CLIENT_SECRET: ${INSTAGRAM_CLIENT_SECRET}
+      LINKEDIN_CLIENT_ID: ${LINKEDIN_CLIENT_ID}
+      LINKEDIN_CLIENT_SECRET: ${LINKEDIN_CLIENT_SECRET}
+      YOUTUBE_CLIENT_ID: ${YOUTUBE_CLIENT_ID}
+      YOUTUBE_CLIENT_SECRET: ${YOUTUBE_CLIENT_SECRET}
+      WXPLAT_APP_ID: ${WXPLAT_APP_ID}
+      WXPLAT_APP_SECRET: ${WXPLAT_APP_SECRET}
+      WXPLAT_TOKEN: ${WXPLAT_TOKEN}
+      WXPLAT_ENCODING_AES_KEY: ${WXPLAT_ENCODING_AES_KEY}
+      MY_WXPLAT_ID: ${MY_WXPLAT_ID}
+      MY_WXPLAT_SECRET: ${MY_WXPLAT_SECRET}
+      MY_WXPLAT_HOST_URL: ${MY_WXPLAT_HOST_URL}
+      DOYIN_CLIENT_ID: ${DOYIN_CLIENT_ID}
+      DOYIN_CLIENT_SECRET: ${DOYIN_CLIENT_SECRET}
+      ALI_SMS_ACCESS_KEY_ID: ${ALI_SMS_ACCESS_KEY_ID}
+      ALI_SMS_ACCESS_KEY_SECRET: ${ALI_SMS_ACCESS_KEY_SECRET}
+      ALI_SMS_SIGN_NAME: ${ALI_SMS_SIGN_NAME}
+      ALI_SMS_TEMPLATE_CODE: ${ALI_SMS_TEMPLATE_CODE}
+      RELAY_SERVER_URL: ${RELAY_SERVER_URL}
+      RELAY_API_KEY: ${RELAY_API_KEY}
+      RELAY_CALLBACK_URL: ${RELAY_CALLBACK_URL}
+      SUPER_CODE: ${SUPER_CODE}
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3002/health', (r) => { process.exit(r.statusCode === 200 ? 0 : 1) })"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  aitoearn-web:
+    image: aitoearn/aitoearn-web:latest
+    pull_policy: always
+    restart: unless-stopped
+    depends_on:
+      aitoearn-server:
+        condition: service_healthy
+      aitoearn-init:
+        condition: service_completed_successfully
+    ports:
+      - 127.0.0.1:${WEB_LOCAL_PORT}:3000
+    volumes:
+      - init-data:/data/init:ro
+    command:
+      - /bin/sh
+      - -c
+      - >
+        if [ "${ENABLE_AUTO_LOGIN}" = "true" ]; then
+          AUTO_LOGIN_TOKEN=$$(cat /data/init/token.txt 2>/dev/null || true);
+          export AUTO_LOGIN_TOKEN;
+        fi;
+        exec node server.js
+    environment:
+      NODE_ENV: production
+      NEXT_TELEMETRY_DISABLED: 1
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000', (r) => { process.exit(r.statusCode < 500 ? 0 : 1) }).on('error', () => process.exit(1))"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 30s
+
+volumes:
+  mongodb-data:
+  mongodb-config:
+  redis-data:
+  rustfs-data:
+  init-data:

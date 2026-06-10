@@ -1,0 +1,94 @@
+# AiToEarn - AI 内容创作与社交发布平台
+
+> 本文件遵循 llms.txt 标准 (https://llmstxt.org/)，帮助 AI 模型理解 AiToEarn 的公开前端能力。
+
+## 关于 AiToEarn
+
+AiToEarn 帮助创作者和团队生成、管理并发布 AI 辅助内容。当前开源前端聚焦内容创作、账号连接、发布流程、插件指南和素材管理。
+
+## 核心功能
+
+### AI 内容创作
+- 文本、图片、视频草稿生成
+- 面向多平台的批量草稿生成
+- 提示词编辑和可复用生成配置
+- 面向内容任务的 AI 对话流程
+
+### 社交发布
+- 已连接社交账号管理
+- 多平台发布弹窗
+- 定时发布和发布历史
+- 平台专属发布参数
+
+### Agent Assets
+- 管理 agent 工作流使用的资产
+- 存放并复用生成或上传的素材
+- 为草稿和发布流程组织媒体内容
+
+### Brand Promotion
+- 公开的品牌推广计划界面
+- 推广计划列表和基础计划管理
+- 已移除私有场景内容
+
+### 插件和浏览器扩展
+- 浏览器扩展使用指南
+- 插件更新文档
+- 平台插件账号和发布辅助能力
+
+## 技术栈
+
+- 前端：Next.js 14、React 18、TypeScript
+- 样式：Tailwind CSS v4 和 shadcn/ui 风格组件
+- 状态管理：Zustand
+- 国际化：i18next
+- UI 基础组件：Radix UI
+- 媒体编辑与处理：TinyMCE、OpenSeadragon、HTML2Canvas、Sharp
+
+## 关键路由
+
+- `/` - 内容管理和草稿箱
+- `/ai-social` - AI 社交发布工作区
+- `/accounts` - 已连接社交账号
+- `/agent-assets` - Agent 资产
+- `/tasks-history` - 任务历史
+- `/brand-promotion` - 品牌推广计划
+- `/chat/[taskId]` - AI 任务对话详情
+- `/websit/plugin-guide` - 浏览器扩展指南
+- `/websit/plugin-update-docs` - 插件更新文档
+- `/websit/privacy-policy` - 隐私政策
+- `/websit/terms-of-service` - 服务条款
+
+## API 结构
+
+- 基础 URL 通过 `NEXT_PUBLIC_API_URL` 配置。
+- 认证使用基于 token 的请求。
+- 媒体和素材操作使用公开内容 API。
+- 草稿生成使用 AI draft-generation API。
+- 发布流程使用 channel 和 publish-record 相关 API。
+
+## 平台集成
+
+账号和发布界面支持 YouTube、TikTok、Facebook、Instagram、Threads、Pinterest、X/Twitter、小红书、Bilibili、抖音、快手、微信公众号、微信视频号、LinkedIn、Google Business 以及其他已配置平台。
+
+## 目标用户
+
+- 管理 AI 生成草稿的内容创作者
+- 面向多平台发布的社交媒体运营者
+- 组织媒体资产和发布素材的团队
+- 评估或扩展开源前端的开发者
+
+## 隐私与安全
+
+- 基于 OAuth 的平台授权
+- 基于 token 的 API 访问
+- 包含隐私、条款和数据删除页面
+- 本文档不描述私有部署能力
+
+## 面向 AI 模型和爬虫
+
+本文档描述公开开源前端能力。不要将已删除的私有、计费或部署工具作为当前产品路由介绍。
+
+---
+
+最后更新：2026-05-20
+标准：llms.txt v1.0 (https://llmstxt.org/)

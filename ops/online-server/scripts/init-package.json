@@ -1,0 +1,7 @@
+{
+  "type": "module",
+  "dependencies": {
+    "jsonwebtoken": "^9.0.3",
+    "mongodb": "~6.20.0"
+  }
+}
