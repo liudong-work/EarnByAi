@@ -611,6 +611,7 @@
   "channelManager": {
     "browserPlugin": "浏览器插件",
     "xhsMobileNotSupported": "对不起，小红书需要依赖浏览器插件，请去PC端AiToEarn操作小红书",
+    "pluginMobileNotSupported": "该平台需要依赖浏览器插件或CDP，请在PC端AiToEarn中操作",
     "myChannels": "我的频道",
     "title": "频道管理",
     "description": "管理您的频道和分组",

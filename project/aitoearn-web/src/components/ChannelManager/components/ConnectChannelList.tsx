@@ -17,9 +17,12 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { useIsMobile } from '@/hooks/useIsMobile'
 import { confirm } from '@/lib/confirm'
 import { useAccountStore } from '@/store/account'
+import { PLUGIN_SUPPORTED_PLATFORMS } from '@/store/plugin'
 import { useUserStore } from '@/store/user'
 import { navigateToLogin } from '@/utils/auth'
 import { useChannelManagerStore } from '../channelManagerStore'
+
+const pluginSupportedPlatformSet = new Set<PlatType>(PLUGIN_SUPPORTED_PLATFORMS)
 
 export function ConnectChannelList() {
   const { t } = useTransClient('account')
@@ -56,9 +59,9 @@ export function ConnectChannelList() {
 
   // 处理平台点击
   const handlePlatformClick = async (platform: PlatType) => {
-    // 移动端点击小红书时显示提示
-    if (isMobile && platform === PlatType.Xhs) {
-      toast.warning(t('channelManager.xhsMobileNotSupported'))
+    // 插件/CDP 平台依赖桌面浏览器登录态，移动端无法完成本地分发。
+    if (isMobile && pluginSupportedPlatformSet.has(platform)) {
+      toast.warning(t('channelManager.pluginMobileNotSupported'))
       return
     }
 
@@ -139,6 +142,8 @@ export function ConnectChannelList() {
         >
           <TooltipProvider>
             {AccountPlatInfoArr.map(([key, value]) => {
+              const isPluginPlatform = pluginSupportedPlatformSet.has(key as PlatType)
+
               return (
                 <Tooltip key={key}>
                   <TooltipTrigger asChild>
@@ -159,8 +164,8 @@ export function ConnectChannelList() {
                       `}
                       onClick={() => handlePlatformClick(key as PlatType)}
                     >
-                      {/* 小红书浏览器插件标签 */}
-                      {key === PlatType.Xhs && (
+                      {/* 浏览器插件/CDP 平台标签 */}
+                      {isPluginPlatform && (
                         <span className="absolute -right-px -top-px z-20 rounded-bl rounded-tr-lg bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground">
                           {t('channelManager.browserPlugin')}
                         </span>

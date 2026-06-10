@@ -266,6 +266,17 @@ RELAY_CALLBACK_URL: http://localhost:8080/api/plat/relay-callback
 
 Then restart: `docker compose restart aitoearn-server`
 
+#### Local CDP Bridge (Optional)
+
+If you want to first validate Douyin/RedNote distribution without relying on the official Relay or platform OAuth, start the local CDP Bridge while using your self-hosted Web app. It connects to the Douyin/RedNote accounts already logged in on your local Chrome and opens the corresponding publishing page.
+
+```bash
+cd project/aitoearn-web
+npm run cdp:bridge
+```
+
+After it starts, your self-hosted Web app will use the browser plugin/CDP channel when adding Douyin or RedNote channels. During publishing, AiToEarn attempts to attach media and fill the title/body, and you still confirm the final publish action on the platform page.
+
 > 📖 Full deployment guide (production config, AI services, OAuth, storage, etc.): [DOCKER_DEPLOYMENT_EN.md](DOCKER_DEPLOYMENT_EN.md).
 
 ---

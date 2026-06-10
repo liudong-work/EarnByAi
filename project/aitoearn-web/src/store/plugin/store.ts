@@ -33,6 +33,7 @@ import { useUserStore } from '@/store/user'
 import { generateUUID, parseTopicString } from '@/utils'
 import { getOssUrl } from '@/utils/oss'
 import { isPluginPlatformAccountReady } from './account.utils'
+import { ensurePluginApi } from './cdpBridge'
 import { DEFAULT_POLLING_INTERVAL } from './constants'
 import {
   buildPluginPlatformConfig,
@@ -327,7 +328,7 @@ export const usePluginStore = create(
 
       /** 获取插件版本信息 */
       async fetchPluginVersion(force = false) {
-        const plugin = typeof window !== 'undefined' ? window.AIToEarnPlugin : undefined
+        const plugin = await ensurePluginApi()
         const isInstalled = !!plugin
         const { pluginVersion, pluginVersionStatus, status } = get()
 
@@ -371,8 +372,13 @@ export const usePluginStore = create(
         const isAvailable = typeof window !== 'undefined' && !!window.AIToEarnPlugin
 
         if (!isAvailable) {
-          methods.clearPluginVersion()
-          set({ status: Status.NOT_INSTALLED })
+          set({ status: Status.CHECKING })
+          void ensurePluginApi().then((plugin) => {
+            if (!plugin) {
+              methods.clearPluginVersion()
+              set({ status: Status.NOT_INSTALLED })
+            }
+          })
           return false
         }
         const currentStatus = get().status
@@ -384,14 +390,14 @@ export const usePluginStore = create(
 
       /** 检查插件权限 */
       async checkPermission() {
-        const isInstalled = typeof window !== 'undefined' && !!window.AIToEarnPlugin
-        if (!isInstalled) {
+        const plugin = await ensurePluginApi()
+        if (!plugin) {
           methods.clearPluginVersion()
           set({ status: Status.NOT_INSTALLED })
           return false
         }
         try {
-          const result = await window.AIToEarnPlugin!.checkPermission()
+          const result = await plugin.checkPermission()
           if (result.granted) {
             set({ status: Status.READY })
             void methods.fetchPluginVersion(true)
@@ -526,12 +532,16 @@ export const usePluginStore = create(
         if (status !== Status.READY)
           return
 
+        const plugin = await ensurePluginApi()
+        if (!plugin)
+          return
+
         const accounts: Partial<PlatformAccountsMap> = {}
 
         await Promise.all(
           PLUGIN_SUPPORTED_PLATFORMS.map(async (platform) => {
             try {
-              accounts[platform] = await window.AIToEarnPlugin!.login(platform)
+              accounts[platform] = await plugin.login(platform)
             }
             catch {
               accounts[platform] = null
@@ -629,8 +639,12 @@ export const usePluginStore = create(
         if (status !== Status.READY)
           throw new Error(ERROR_MESSAGES.PLUGIN_NOT_READY)
 
+        const plugin = await ensurePluginApi()
+        if (!plugin)
+          throw new Error(ERROR_MESSAGES.PLUGIN_NOT_INSTALLED)
+
         try {
-          const result = await window.AIToEarnPlugin!.login(platform)
+          const result = await plugin.login(platform)
           set({
             platformAccounts: { ...platformAccounts, [platform]: result },
           })
@@ -663,6 +677,10 @@ export const usePluginStore = create(
         if (status !== Status.READY)
           throw new Error(ERROR_MESSAGES.PLUGIN_NOT_READY)
 
+        const plugin = await ensurePluginApi()
+        if (!plugin)
+          throw new Error(ERROR_MESSAGES.PLUGIN_NOT_INSTALLED)
+
         // 检查该账号是否正在发布（同一平台不同账号可以同时发布）
         if (publishingPlatforms.has(publishKey))
           throw new Error(`${platform} ${ERROR_MESSAGES.PUBLISHING_IN_PROGRESS}`)
@@ -687,7 +705,7 @@ export const usePluginStore = create(
         })
 
         try {
-          const result = await window.AIToEarnPlugin!.publish(params, (progress) => {
+          const result = await plugin.publish(params, (progress) => {
             // 更新该账号的进度
             const updatedProgress = new Map(get().platformProgress)
             updatedProgress.set(publishKey, progress)

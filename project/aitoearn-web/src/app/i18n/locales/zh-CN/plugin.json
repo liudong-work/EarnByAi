@@ -111,6 +111,11 @@
     "viewGuide": "查看授权教程",
     "viewInstallGuide": "不会安装？点击查看浏览器插件安装教程"
   },
+  "localBridge": {
+    "title": "本地 CDP Bridge 模式",
+    "description": "如果官方插件在自部署域名下检测不到，可以在本机启动 CDP Bridge，直接使用本机 Chrome 里已登录的抖音/小红书账号分发。",
+    "command": "npm run cdp:bridge"
+  },
   "mobile": {
     "title": "仅支持桌面端",
     "description": "浏览器插件无法在移动设备上使用，请前往电脑端浏览器安装和使用插件。",

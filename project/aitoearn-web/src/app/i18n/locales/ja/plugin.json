@@ -111,6 +111,11 @@
     "viewGuide": "認証ガイドを見る",
     "viewInstallGuide": "ブラウザプラグインのインストールガイドを見る（手動インストール）"
   },
+  "localBridge": {
+    "title": "Local CDP Bridge Mode",
+    "description": "If the official plugin is not detected on a self-hosted domain, start the local CDP Bridge to distribute with the Douyin/RedNote accounts already logged in on your Chrome.",
+    "command": "npm run cdp:bridge"
+  },
   "mobile": {
     "title": "デスクトップ専用",
     "description": "ブラウザ拡張機能はモバイルデバイスでは利用できません。拡張機能のインストールと使用にはデスクトップブラウザをご利用ください。",

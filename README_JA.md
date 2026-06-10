@@ -271,6 +271,17 @@ RELAY_CALLBACK_URL: http://localhost:8080/api/plat/relay-callback
 
 その後再起動：`docker compose restart aitoearn-server`
 
+#### ローカル CDP Bridge（任意）
+
+公式 Relay やプラットフォーム OAuth に依存せず、まず抖音/小紅書の配信フローを確認したい場合は、自己デプロイした Web とあわせてローカル CDP Bridge を起動できます。これはローカル Chrome でログイン済みの抖音/小紅書アカウントに接続し、公開時に対応する公開ページを開きます。
+
+```bash
+cd project/aitoearn-web
+npm run cdp:bridge
+```
+
+起動後、自己デプロイ Web で抖音または小紅書チャンネルを追加すると、ブラウザプラグイン/CDP チャンネルが使われます。公開時は素材の添付とタイトル/本文の入力を試み、最後の公開確認はプラットフォームページ上で行います。
+
 > 📖 完全なデプロイガイド（本番環境設定、AIサービス、OAuth、ストレージなど）：[DOCKER_DEPLOYMENT_EN.md](DOCKER_DEPLOYMENT_EN.md)を参照。
 
 ---
