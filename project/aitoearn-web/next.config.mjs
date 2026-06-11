@@ -40,7 +40,7 @@ const nextConfig = {
     if (process.env.NEXT_PUBLIC_PROXY_URL) {
       rewrites.push({
         source: `/api/:path*`,
-        destination: `${process.env.NEXT_PUBLIC_PROXY_URL}/api/:path*`,
+        destination: `${process.env.NEXT_PUBLIC_PROXY_URL}/:path*`,
       })
     }
     return rewrites
