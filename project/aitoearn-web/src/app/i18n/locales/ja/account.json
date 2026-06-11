@@ -547,7 +547,8 @@
     "noData": "データがありません",
     "browserPlugin": "Browser Plugin",
     "viewExplore": "Explore",
-    "xhsMobileNotSupported": "Sorry, Rednote requires a browser plugin. Please use AiToEarn on PC to operate Rednote."
+    "xhsMobileNotSupported": "Sorry, Rednote requires a browser plugin. Please use AiToEarn on PC to operate Rednote.",
+    "pluginMobileNotSupported": "This platform requires the browser plugin or CDP. Please use AiToEarn on desktop."
   },
   "agentCreate": "Agent Create",
   "explore": "Explore Twitter",

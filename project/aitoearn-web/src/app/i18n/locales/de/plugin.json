@@ -111,6 +111,11 @@
     "viewGuide": "Autorisierungsanleitung ansehen",
     "viewInstallGuide": "Anleitung zur Installation des Browser-Plugins ansehen (manuelle Installation)"
   },
+  "localBridge": {
+    "title": "Local CDP Bridge Mode",
+    "description": "If the official plugin is not detected on a self-hosted domain, start the local CDP Bridge to distribute with the Douyin/RedNote accounts already logged in on your Chrome.",
+    "command": "npm run cdp:bridge"
+  },
   "mobile": {
     "title": "Nur für Desktop",
     "description": "Die Browser-Erweiterung ist auf mobilen Geräten nicht verfügbar. Bitte verwenden Sie einen Desktop-Browser, um die Erweiterung zu installieren und zu nutzen.",

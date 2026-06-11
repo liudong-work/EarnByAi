@@ -76,7 +76,7 @@ export enum PluginStatus {
 /**
  * 插件支持的平台列表
  */
-export const PLUGIN_SUPPORTED_PLATFORMS = [PlatType.Xhs, PlatType.WxSph] as const
+export const PLUGIN_SUPPORTED_PLATFORMS = [PlatType.Xhs, PlatType.Douyin, PlatType.WxSph] as const
 
 /**
  * 插件支持的平台类型（直接复用 PlatType）

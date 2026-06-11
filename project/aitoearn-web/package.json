@@ -5,6 +5,7 @@
   "scripts": {
     "postinstall": "node scripts/copy-tinymce-assets.mjs",
     "dev": "next dev -p 6061",
+    "cdp:bridge": "node scripts/cdp-bridge.mjs",
     "dev:local": "cross-env NEXT_PUBLIC_API_URL=http://localhost:7001/api next dev",
     "build": "next build",
     "type-check": "tsc --noEmit",

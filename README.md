@@ -272,6 +272,17 @@ RELAY_CALLBACK_URL: http://localhost:8080/api/plat/relay-callback
 
 然后重启：`docker compose restart aitoearn-server`
 
+#### 本地 CDP Bridge（可选）
+
+如果你只想先跑通抖音/小红书分发，不依赖官方 Relay，也不走平台 OAuth，可以在使用自部署 Web 时启动本地 CDP Bridge。它会连接你本机 Chrome 中已登录的抖音/小红书账号，并在发布时打开对应平台发布页。
+
+```bash
+cd project/aitoearn-web
+npm run cdp:bridge
+```
+
+启动后访问自部署 Web，添加抖音或小红书频道会走浏览器插件/CDP 通道。发布时系统会尝试挂载素材并填入标题/正文，最后仍需要你在平台页面确认发布。
+
 > 📖 完整部署指南（生产环境配置、AI 服务、OAuth、存储等）请参阅 [DOCKER_DEPLOYMENT_CN.md](DOCKER_DEPLOYMENT_CN.md)。
 
 ---

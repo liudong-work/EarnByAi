@@ -5,7 +5,7 @@
 
 'use client'
 
-import { BookOpen, Chrome, CloudDownload, Github, Monitor, Puzzle } from 'lucide-react'
+import { BookOpen, Chrome, CloudDownload, Github, Monitor, Puzzle, Terminal } from 'lucide-react'
 import Link from 'next/link'
 import { useTranslation } from 'react-i18next'
 import { useChannelManagerStore } from '@/components/ChannelManager'
@@ -87,6 +87,20 @@ export function PluginNotInstalled() {
       <p className="mb-8 max-w-sm text-center text-sm text-muted-foreground">
         {t('header.downloadDescription')}
       </p>
+
+      {/* 本地 CDP Bridge 提示 */}
+      <div className="mb-6 w-full max-w-sm rounded-lg border border-primary/15 bg-primary/5 p-4 text-left">
+        <div className="mb-2 flex items-center gap-2">
+          <Terminal className="h-4 w-4 text-primary" />
+          <span className="text-sm font-semibold text-foreground">{t('localBridge.title')}</span>
+        </div>
+        <p className="mb-3 text-xs leading-relaxed text-muted-foreground">
+          {t('localBridge.description')}
+        </p>
+        <code className="block rounded-md bg-background px-3 py-2 text-xs text-foreground">
+          {t('localBridge.command')}
+        </code>
+      </div>
 
       {/* 下载按钮 */}
       <div className="flex w-full max-w-xs flex-col space-y-3">

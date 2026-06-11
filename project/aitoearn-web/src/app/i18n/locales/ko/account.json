@@ -547,7 +547,8 @@
     "viewExplore": "Explore",
     "wxGzhAuthNoticeContent": "WeChat Official Accounts only supports verified non-personal official accounts. Please make sure your official account meets the requirements first.",
     "wxGzhAuthNoticeTitle": "Notice",
-    "xhsMobileNotSupported": "Sorry, Rednote requires a browser plugin. Please use AiToEarn on PC to operate Rednote."
+    "xhsMobileNotSupported": "Sorry, Rednote requires a browser plugin. Please use AiToEarn on PC to operate Rednote.",
+    "pluginMobileNotSupported": "This platform requires the browser plugin or CDP. Please use AiToEarn on desktop."
   },
   "agentCreate": "Agent Create",
   "explore": "Explore Twitter",

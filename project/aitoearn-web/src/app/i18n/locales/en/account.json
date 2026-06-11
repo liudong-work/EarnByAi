@@ -613,6 +613,7 @@
   "channelManager": {
     "browserPlugin": "Browser Plugin",
     "xhsMobileNotSupported": "Sorry, Rednote requires a browser plugin. Please use AiToEarn on PC to operate Rednote.",
+    "pluginMobileNotSupported": "This platform requires the browser plugin or CDP. Please use AiToEarn on desktop.",
     "myChannels": "My Channels",
     "title": "Channel Manager",
     "description": "Manage your channels and groups",

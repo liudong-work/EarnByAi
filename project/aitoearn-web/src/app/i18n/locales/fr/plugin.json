@@ -111,6 +111,11 @@
     "viewGuide": "Voir le guide d'autorisation",
     "viewInstallGuide": "Voir le guide d'installation du plugin navigateur (installation manuelle)"
   },
+  "localBridge": {
+    "title": "Local CDP Bridge Mode",
+    "description": "If the official plugin is not detected on a self-hosted domain, start the local CDP Bridge to distribute with the Douyin/RedNote accounts already logged in on your Chrome.",
+    "command": "npm run cdp:bridge"
+  },
   "mobile": {
     "title": "Bureau uniquement",
     "description": "L'extension de navigateur n'est pas disponible sur les appareils mobiles. Veuillez utiliser un navigateur de bureau pour installer et utiliser l'extension.",
